@@ -18,12 +18,19 @@ package etcd3
 
 import (
 	"fmt"
+	"github.com/coreos/etcd/clientv3"
+	"io/ioutil"
 
 	"github.com/coreos/etcd/clientv3"
 	"k8s.io/klog"
 )
 
 func init() {
+	// overwrite gRPC logger, to discard all gRPC info-level logging -- temporary until rRPC 1.30 when verbosity becomes off by default.
+	// https://github.com/kubernetes/kubernetes/issues/80741
+	// https://github.com/kubernetes/kubernetes/pull/84061
+	grpclog.SetLoggerV2(grpclog.NewLoggerV2(ioutil.Discard, os.Stderr, os.Stderr))
+
 	clientv3.SetLogger(klogWrapper{})
 }
 
